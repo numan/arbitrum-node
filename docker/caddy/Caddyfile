@@ -1,0 +1,10 @@
+:80 {
+ basicauth {
+  {$BASICAUTH_USERNAME} {$BASICAUTH_HASHED_PASSWORD}
+ }
+
+ reverse_proxy arbitrum:8547 {
+   header_up X-Scheme https
+   header_down Access-Control-Allow-Headers "origin, content-type, accept"
+ }
+}

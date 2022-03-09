@@ -1,0 +1,27 @@
+{
+  "vpc-provider:account=123465938933:filter.vpc-id=vpc-0c9f76230da9f0373:region=us-east-1:returnAsymmetricSubnets=true": {
+    "vpcId": "vpc-0c9f76230da9f0373",
+    "vpcCidrBlock": "10.0.0.0/16",
+    "availabilityZones": [],
+    "subnetGroups": [
+      {
+        "name": "Public",
+        "type": "Public",
+        "subnets": [
+          {
+            "subnetId": "subnet-06e206a4ddfffa176",
+            "cidr": "10.0.0.0/23",
+            "availabilityZone": "us-east-1a",
+            "routeTableId": "rtb-0218f7cd023f1a62f"
+          },
+          {
+            "subnetId": "subnet-0c8287c9d06463943",
+            "cidr": "10.0.2.0/23",
+            "availabilityZone": "us-east-1b",
+            "routeTableId": "rtb-0c10c1affc2095024"
+          }
+        ]
+      }
+    ]
+  }
+}
