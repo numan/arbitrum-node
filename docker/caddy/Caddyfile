@@ -1,6 +1,12 @@
-:80 {
+arbitrum1.node.yearn.tools, :80 {
  basicauth {
   {$BASICAUTH_USERNAME} {$BASICAUTH_HASHED_PASSWORD}
+ }
+
+ tls {
+  dns route53 {
+    max_retries 10
+  }
  }
 
  reverse_proxy arbitrum:8547 {

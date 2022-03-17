@@ -28,13 +28,10 @@ class AppStack(cdk.Stack):
         else:
             vpc = ec2.Vpc.from_lookup(self, "VPC", vpc_id=vpc_id)
 
-        CLOUDFLARE_KEY = os.environ.get("CLOUDFLARE_KEY")
         BASICAUTH_USERNAME = os.environ.get("BASICAUTH_USERNAME")
         BASICAUTH_HASHED_PASSWORD = os.environ.get("BASICAUTH_HASHED_PASSWORD")
         L1_NODE_URL = os.environ.get("L1_NODE_URL")
 
-        if CLOUDFLARE_KEY is None:
-            raise Exception("CLOUDFLARE_KEY environment variable not set")
         if BASICAUTH_USERNAME is None:
             raise Exception("BASICAUTH_USERNAME environment variable not set")
         if BASICAUTH_HASHED_PASSWORD is None:
@@ -46,7 +43,6 @@ class AppStack(cdk.Stack):
             self,
             "ArbitrumNodeStack",
             vpc=vpc,
-            cloudflare_key=CLOUDFLARE_KEY,
             basic_auth_username=BASICAUTH_USERNAME,
             basic_auth_hashed_password=BASICAUTH_HASHED_PASSWORD,
             l1_node_url=L1_NODE_URL,

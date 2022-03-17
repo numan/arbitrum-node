@@ -15,7 +15,6 @@ class ArbitrumNodeStack(Stack):
         scope: Construct,
         construct_id: str,
         vpc: ec2.IVpc,
-        cloudflare_key: str,
         basic_auth_username: str,
         basic_auth_hashed_password: str,
         l1_node_url: str,
@@ -45,8 +44,12 @@ class ArbitrumNodeStack(Stack):
             )
         )
 
-        asg_provider.auto_scaling_group.connections.allow_from_any_ipv4(ec2.Port.tcp(80))
-        asg_provider.auto_scaling_group.connections.allow_from_any_ipv4(ec2.Port.tcp(443))
+        asg_provider.auto_scaling_group.connections.allow_from_any_ipv4(
+            ec2.Port.tcp(80)
+        )
+        asg_provider.auto_scaling_group.connections.allow_from_any_ipv4(
+            ec2.Port.tcp(443)
+        )
 
         cluster.add_asg_capacity_provider(asg_provider)
 
@@ -94,6 +97,10 @@ class ArbitrumNodeStack(Stack):
             command=[
                 "--l1.url",
                 l1_node_url,
+                "--core.checkpoint-gas-frequency",
+                "156250000",
+                "--node.cache.allow-slow-lookup",
+
             ],
             port_mappings=[
                 ecs.PortMapping(container_port=8547),  # RPC
@@ -121,20 +128,40 @@ class ArbitrumNodeStack(Stack):
             ),
             port_mappings=[
                 ecs.PortMapping(container_port=80, host_port=80),
-                ecs.PortMapping(container_port=433, host_port=433),
+                ecs.PortMapping(container_port=443, host_port=443),
             ],
             environment={
                 "BASICAUTH_USERNAME": basic_auth_username,
                 "BASICAUTH_HASHED_PASSWORD": basic_auth_hashed_password,
-                "CLOUDFLARE_KEY": cloudflare_key,
             },
         )
 
         caddy_container.add_link(container, "arbitrum")
 
-        ecs.Ec2Service(
+        service = ecs.Ec2Service(
             self,
             "ArbitrumNodeService",
             cluster=cluster,
             task_definition=task_definition,
+        )
+
+        service.task_definition.task_role.add_to_principal_policy(
+            iam.PolicyStatement(
+                actions=[
+                    "route53:ListResourceRecordSets",
+                    "route53:GetChange",
+                    "route53:ChangeResourceRecordSets",
+                ],
+                resources=[
+                    "arn:aws:route53:::hostedzone/*",
+                    "arn:aws:route53:::change/*",
+                ],
+            )
+        )
+
+        service.task_definition.task_role.add_to_principal_policy(
+            iam.PolicyStatement(
+                actions=["route53:ListHostedZonesByName", "route53:ListHostedZones"],
+                resources=["*"],
+            )
         )

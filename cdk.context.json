@@ -23,5 +23,8 @@
         ]
       }
     ]
-  }
+  },
+  "acknowledged-issue-numbers": [
+    19179
+  ]
 }
