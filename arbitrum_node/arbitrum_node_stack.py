@@ -86,7 +86,7 @@ class ArbitrumNodeStack(Stack):
             "ArbitrumNodeContainer",
             container_name="arbitrum",
             image=ecs.ContainerImage.from_registry(
-                "offchainlabs/arb-node:v1.2.0-9214e38"
+                "offchainlabs/arb-node:v1.4.0-f4bbe91"
             ),
             memory_reservation_mib=1024,
             logging=ecs.AwsLogDriver(
@@ -100,6 +100,7 @@ class ArbitrumNodeStack(Stack):
                 "--core.checkpoint-gas-frequency",
                 "156250000",
                 "--node.cache.allow-slow-lookup",
+                "--node.rpc.tracing.enable",
 
             ],
             port_mappings=[
